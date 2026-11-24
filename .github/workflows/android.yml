@@ -1,58 +1,37 @@
-name: Build APK
-
-# Builds an installable debug APK on every push, and on demand from the Actions
-# tab ("Run workflow"). Modelled on wjeroen/TrackyTime.
-#
-# Signing: the repo ships a committed debug.keystore (a debug key is not secret),
-# so every build is signed with the same key and new APKs install over old ones
-# with zero extra setup. If you would rather keep the keystore OUT of the repo,
-# add these four repository secrets and delete debug.keystore; this workflow then
-# uses them automatically:
-#   DEBUG_KEYSTORE_BASE64, DEBUG_KEYSTORE_PASSWORD, DEBUG_KEY_ALIAS, DEBUG_KEY_PASSWORD
+name: Build Codeboard Android
 
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - master
+      - feature/navigation-bar-fix
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-          cache: gradle
 
-      - name: Decode debug keystore from secret (optional override)
-        id: keystore
-        env:
-          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
-        run: |
-          if [ -n "$DEBUG_KEYSTORE_BASE64" ]; then
-            echo "$DEBUG_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/debug.keystore"
-            echo "path=$RUNNER_TEMP/debug.keystore" >> "$GITHUB_OUTPUT"
-            echo "Signing with the debug keystore from the repo secret."
-          else
-            echo "No DEBUG_KEYSTORE_BASE64 secret set; signing with the committed debug.keystore."
-          fi
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Build debug APK
-        env:
-          DEBUG_KEYSTORE_PATH: ${{ steps.keystore.outputs.path }}
-          DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
-          DEBUG_KEY_ALIAS: ${{ secrets.DEBUG_KEY_ALIAS }}
-          DEBUG_KEY_PASSWORD: ${{ secrets.DEBUG_KEY_PASSWORD }}
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: codeboard-debug
+          name: codeboard-debug-apk
           path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7
