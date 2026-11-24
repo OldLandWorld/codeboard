@@ -1,6 +1,7 @@
 name: Build Codeboard Android
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
