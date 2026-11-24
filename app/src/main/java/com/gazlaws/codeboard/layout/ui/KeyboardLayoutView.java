@@ -20,31 +20,20 @@ public class KeyboardLayoutView extends ViewGroup {
         this.uiTheme = uiTheme;
     }
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-    		DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
 
-    		int availableHeight = MeasureSpec.getSize(heightMeasureSpec);
-    		int availableWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int availableHeight = metrics.heightPixels;
+        int availableWidth = metrics.widthPixels;
 
-    		if (availableHeight <= 0) {
-		        availableHeight = metrics.heightPixels;
-		    }
+        float keyboardSize = availableHeight > availableWidth
+                ? uiTheme.portraitSize
+                : uiTheme.landscapeSize;
 
-	        if (availableWidth <= 0) {
-		        availableWidth = metrics.widthPixels;
-		    }
-
-	    float keyboardSize = availableHeight > availableWidth
-        	    ? uiTheme.portraitSize
-            	: uiTheme.landscapeSize;
-
-	    setMeasuredDimension(
-            availableWidth,
-            (int) (availableHeight * keyboardSize)
-	    );
-	}
+        setMeasuredDimension(availableWidth, (int)(availableHeight * keyboardSize));
+    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
