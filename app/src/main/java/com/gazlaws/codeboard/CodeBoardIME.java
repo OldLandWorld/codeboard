@@ -406,6 +406,28 @@ public class CodeBoardIME extends InputMethodService
     }
 
     @Override
+        public void onConfigureWindow(
+        android.view.Window win,
+        boolean isFullscreen,
+        boolean isCandidatesOnly) {
+
+    super.onConfigureWindow(win, isFullscreen, isCandidatesOnly);
+
+    if (!isFullscreen && !isCandidatesOnly) {
+        KeyboardPreferences preferences = new KeyboardPreferences(this);
+
+        int offsetDp = preferences.getKeyboardVerticalOffset();
+        int offsetPx = Math.round(
+                offsetDp * getResources().getDisplayMetrics().density
+        );
+
+        android.view.WindowManager.LayoutParams params = win.getAttributes();
+        params.y = offsetPx;
+        win.setAttributes(params);
+      }
+    }
+
+    @Override
     public void onViewClicked(boolean focusChanged) {
         super.onViewClicked(focusChanged);
         clearLongPressTimer();
