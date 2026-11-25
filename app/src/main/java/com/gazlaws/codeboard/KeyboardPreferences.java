@@ -105,6 +105,14 @@ public class KeyboardPreferences {
         }
     }
 
+    public int getKeyboardVerticalOffset() {
+        try {
+            return Integer.parseInt(safeRead("keyboard_vertical_offset", "0"));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 
     public float getFontSizeAsSp() {
         String fontSize = safeRead("font_size",
