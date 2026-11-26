@@ -770,7 +770,7 @@ public class CodeBoardIME extends InputMethodService
         int offsetPx = Math.round(offsetDp * getResources().getDisplayMetrics().density);
         FrameLayout wrapper = new FrameLayout(this);
         wrapper.setBackgroundColor(bgColor);
-        wrapper.setClipChildren(true);
+        wrapper.setClipChildren(false);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
