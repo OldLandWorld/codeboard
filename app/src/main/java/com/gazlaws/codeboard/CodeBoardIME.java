@@ -775,8 +775,8 @@ public class CodeBoardIME extends InputMethodService
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP);
-        lp.bottomMargin = offsetPx;
         wrapper.addView(keyboard, lp);
+        keyboard.setTranslationY(-offsetPx);
         return wrapper;
     }
 
