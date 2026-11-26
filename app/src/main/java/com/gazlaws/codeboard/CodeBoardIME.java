@@ -26,6 +26,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.view.Gravity;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
@@ -406,28 +409,6 @@ public class CodeBoardIME extends InputMethodService
     }
 
     @Override
-        public void onConfigureWindow(
-        android.view.Window win,
-        boolean isFullscreen,
-        boolean isCandidatesOnly) {
-
-    super.onConfigureWindow(win, isFullscreen, isCandidatesOnly);
-
-    if (!isFullscreen && !isCandidatesOnly) {
-        KeyboardPreferences preferences = new KeyboardPreferences(this);
-
-        int offsetDp = preferences.getKeyboardVerticalOffset();
-        int offsetPx = Math.round(
-                offsetDp * getResources().getDisplayMetrics().density
-        );
-
-        android.view.WindowManager.LayoutParams params = win.getAttributes();
-        params.y = offsetPx;
-        win.setAttributes(params);
-      }
-    }
-
-    @Override
     public void onViewClicked(boolean focusChanged) {
         super.onViewClicked(focusChanged);
         clearLongPressTimer();
@@ -774,12 +755,29 @@ public class CodeBoardIME extends InputMethodService
             if (shiftLock) {
                 mCurrentKeyboardLayoutView.applyCapsLock(true);
             }
-            return mCurrentKeyboardLayoutView;
+            return wrapWithVerticalOffset(
+                    mCurrentKeyboardLayoutView,
+                    sharedPreferences.getKeyboardVerticalOffset(),
+                    mKeyboardUiFactory.theme.backgroundColor);
 
         } catch (KeyboardLayoutException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private View wrapWithVerticalOffset(View keyboard, int offsetDp, int bgColor) {
+        int offsetPx = Math.round(offsetDp * getResources().getDisplayMetrics().density);
+        FrameLayout wrapper = new FrameLayout(this);
+        wrapper.setBackgroundColor(bgColor);
+        wrapper.setClipChildren(true);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP);
+        wrapper.addView(keyboard, lp);
+        keyboard.setTranslationY(-offsetPx);
+        return wrapper;
     }
 
     @Override
