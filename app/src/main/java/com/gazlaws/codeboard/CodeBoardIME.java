@@ -770,15 +770,19 @@ public class CodeBoardIME extends InputMethodService
         int offsetPx = Math.round(offsetDp * getResources().getDisplayMetrics().density);
         FrameLayout wrapper = new FrameLayout(this);
         wrapper.setBackgroundColor(bgColor);
-        wrapper.setClipChildren(true);
+        wrapper.setClipChildren(false);
+        wrapper.setPadding(0, 0, 0, offsetPx);
+
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.TOP);
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP);
         wrapper.addView(keyboard, lp);
-        keyboard.setTranslationY(-offsetPx);
+
         return wrapper;
     }
+
+
 
     @Override
     public void onUpdateExtractingVisibility(EditorInfo ei) {
